@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>控制类论文可复现性标注库</title>
+<meta name="description" content="统计控制方向论文是否给出对象模型、建模推导、控制器结构、控制器参数、仿真设置与响应曲线，用于判断一篇论文能不能照着复现。">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>控制类论文可复现性标注库</h1>
+    <p class="sub">
+      读一篇控制论文想照着做，常常卡在同一处：模型给了但参数没给，参数给了但没说初值，图有但读不出数。
+      这里把六件「复现需要、但经常缺」的事逐篇标出来——<strong>只记录有没有给，不评价论文好坏</strong>。
+    </p>
+    <nav class="links">
+      <a href="about.html">判定标准与提交规则</a>
+      <a id="nav-submit" href="https://github.com/" target="_blank" rel="noopener">提交一篇标注 →</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 统计 -->
+  <section id="stats" class="stats">
+    <div class="legend">正在读取本地数据…</div>
+  </section>
+
+  <!-- 筛选 -->
+  <section class="toolbar" aria-label="筛选">
+    <input id="f-q" type="search" placeholder="搜题目 / 期刊 / 关键词（空格分隔多个词）" autocomplete="off">
+    <select id="f-type" aria-label="论文类型">
+      <option value="">全部类型</option>
+      <option value="仿真">仿真</option>
+      <option value="实验">实验</option>
+      <option value="工程">工程</option>
+    </select>
+    <select id="f-year" aria-label="年份"><option value="">全部年份</option></select>
+    <select id="f-repro" aria-label="总评">
+      <option value="">全部总评</option>
+      <option value="能">能复现</option>
+      <option value="存疑">存疑</option>
+      <option value="不能">不能</option>
+    </select>
+    <select id="f-missing" aria-label="只看缺失项"><option value="">不限缺失项</option></select>
+    <button id="f-reset" type="button">重置</button>
+    <span id="f-count" class="count"></span>
+  </section>
+
+  <!-- 表格 -->
+  <div id="table-host">
+    <noscript><div class="empty"><strong>需要启用 JavaScript</strong>本页在本地读取数据文件后渲染表格。</div></noscript>
+  </div>
+
+  <!-- 使用说明 -->
+  <footer class="foot" id="how">
+    <p><strong>怎么用</strong>　① 先按「类型」筛，纯仿真论文不该苛求实验数据；② 想找能复现的，把总评筛成「能」；
+       ③ 你自己要动手复现某篇之前，先搜它的标题，看缺在哪一项——缺 <em>对象模型</em> 或 <em>控制器参数</em>，基本可以直接换一篇。</p>
+    <p><strong>六项含义</strong>　对象模型＝有没有数学模型且参数带数值；建模过程＝有没有推导步骤；控制器结构＝有没有控制律或框图；
+       控制器参数＝有没有能直接抄的 Kp/Ti/Td 或算法超参数；仿真设置＝步长/时长/初值/幅值给了几项；响应曲线＝有没有能读出指标的时域图。</p>
+    <p><strong>数据与免责</strong>　本库只记录论文中「是否给出」这一客观事实，不评价论文质量与作者水平；不存储、不转载论文全文，仅保留标题、期刊、年份、DOI 等书目信息与标注结果。
+       标注可能存在疏漏，欢迎在仓库提 Issue 纠错。</p>
+    <p id="foot-stat" class="legend"></p>
+  </footer>
+
+</main>
+
+<script src="data/papers.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
