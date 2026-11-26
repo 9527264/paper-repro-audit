@@ -1,0 +1,151 @@
+name: 提交一篇论文标注
+description: 按「判定标准与提交规则」填写。一个 Issue 只放一篇论文；纠错请把标题改成 [纠错] 编号。
+title: "[标注] "
+labels: ["待审"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提交前请先读完站点的 **判定标准与提交规则** 页面。
+        几点说明：`2`＝明确给出可照做；`1`＝给了但不全；`0`＝未给出；`NA`＝该类论文不该有此项。
+        只记录「论文里有没有给」，不评价论文质量与作者水平。
+        **不要上传论文全文或图片**，只填书目信息与判定结果。
+
+  - type: input
+    id: paper-title
+    attributes:
+      label: 论文标题
+      placeholder: 例如：阀控缸位置伺服系统的 PSO-PID 控制
+    validations:
+      required: true
+
+  - type: input
+    id: journal
+    attributes:
+      label: 期刊 / 会议
+      placeholder: 例如：液压与气动
+    validations:
+      required: true
+
+  - type: input
+    id: year
+    attributes:
+      label: 年份
+      placeholder: 4 位数字，例如 2023
+    validations:
+      required: true
+
+  - type: input
+    id: doi
+    attributes:
+      label: DOI（没有就填「无」）
+      placeholder: 例如 10.11832/j.issn.1000-4858.2023.05.001
+    validations:
+      required: true
+
+  - type: dropdown
+    id: paper-type
+    attributes:
+      label: 论文类型
+      description: 先定类型，因为不同类型论文的判定标准不同
+      options:
+        - 仿真
+        - 实验
+        - 工程
+    validations:
+      required: true
+
+  - type: input
+    id: plant
+    attributes:
+      label: 被控对象
+      placeholder: 例如：液压伺服 / 电机 / 温度 / 机器人 / 过程
+    validations:
+      required: true
+
+  - type: input
+    id: ctrl-type
+    attributes:
+      label: 控制方法
+      placeholder: 例如：PID / 模糊PID / PSO-PID / MPC
+    validations:
+      required: true
+
+  - type: dropdown
+    id: m1
+    attributes:
+      label: m1 对象模型（有没有数学模型且参数带数值）
+      options: ["2", "1", "0", "NA"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: m2
+    attributes:
+      label: m2 建模过程（有没有推导步骤）
+      options: ["2", "1", "0", "NA"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: m3
+    attributes:
+      label: m3 控制器结构（有没有控制律或框图）
+      options: ["2", "1", "0", "NA"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: m4
+    attributes:
+      label: m4 控制器参数（有没有能直接抄的 Kp/Ti/Td 或算法超参数）
+      options: ["2", "1", "0", "NA"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: m5
+    attributes:
+      label: m5 仿真设置（步长/时长/初值/幅值 给了几项：≥3 记 2，1~2 记 1，0 记 0）
+      options: ["2", "1", "0", "NA"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: m6
+    attributes:
+      label: m6 响应曲线（有没有能读出指标的时域图）
+      options: ["2", "1", "0", "NA"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: repro
+    attributes:
+      label: 总评（照这篇论文能不能独立跑出近似结果）
+      description: 对象模型或控制器参数为 0 → 直接「不能」
+      options:
+        - 能
+        - 存疑
+        - 不能
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 备注
+      description: 建议写成「缺：m5(未给初值)、m6(仅有 Bode 图)」这种格式
+      placeholder: 缺：m4(只给超参数未给最终参数)
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 确认
+      options:
+        - label: 我只提交书目信息与判定结果，未上传论文全文或图片
+          required: true
+        - label: 我按「判定标准」逐项判定，没有凭印象打分
+          required: true
