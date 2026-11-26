@@ -119,8 +119,7 @@ def main():
 
     # ---- 统计摘要 ----
     total = len(clean)
-    sample = sum(1 for r in clean if r["title"].startswith("示例"))
-    print("[校验通过] %d 条记录，其中示例 %d 条、正式 %d 条" % (total, sample, total - sample))
+    print("[校验通过] 共 %d 条记录" % total)
     print("已生成 %s\n" % JS_PATH)
     print("%-12s %4s %4s %4s %4s   %s" % ("字段", "2有", "1半", "0无", "NA", "未给全率(0+1)"))
     for col in SCORE_COLS:
