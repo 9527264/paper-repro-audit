@@ -176,16 +176,6 @@ tbody tr.row:hover { background: #fafbfc; }
 tbody tr.row.open { background: #f5f8fc; }
 
 td.title { min-width: 260px; line-height: 1.45; }
-td.title .badge-sample {
-  display: inline-block;
-  font-size: 11px;
-  color: var(--na);
-  background: var(--na-bg);
-  border-radius: 4px;
-  padding: 1px 5px;
-  margin-left: 6px;
-  vertical-align: 1px;
-}
 td.nowrap { white-space: nowrap; }
 td.muted { color: var(--muted); }
 
