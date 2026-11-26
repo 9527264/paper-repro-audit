@@ -57,8 +57,7 @@ console.log('\n[1] 初始渲染');
 ok(rowCount() === expected.scenarios.all, '全部数据行数 = ' + expected.scenarios.all, rowCount());
 ok(statsHost.innerHTML.indexOf('>' + expected.stat_n + '<small>篇') > -1,
   '统计块显示 ' + expected.stat_n + ' 篇');
-ok((tableHost.innerHTML.match(/badge-sample/g) || []).length === expected.samples,
-  '示例徽标数 = ' + expected.samples, (tableHost.innerHTML.match(/badge-sample/g) || []).length);
+ok(!/badge-sample/.test(tableHost.innerHTML), '页面上不再有「示例」徽标', 'badge-sample');
 ok(/NaN|undefined|Infinity/.test(tableHost.innerHTML + statsHost.innerHTML) === false,
   '渲染结果里没有 NaN / undefined');
 ok(countEl.textContent.indexOf(String(expected.total)) > -1, '计数文案含总条数 ' + expected.total, countEl.textContent);
