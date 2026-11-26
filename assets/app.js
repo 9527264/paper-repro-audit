@@ -32,7 +32,6 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
-  function isSample(r) { return String(r.title || '').indexOf('示例') === 0; }
   function score(r, k) {
     var v = String(r[k] || '').toUpperCase();
     return v === 'NA' ? 'NA' : v;
@@ -90,20 +89,14 @@
   }
 
   /* ---------- 统计 ---------- */
-  function statRows(shown) {
-    var real = shown.filter(function (r) { return !isSample(r); });
-    return real.length ? real : shown;
-  }
-
   function renderStats(shown) {
     var host = document.getElementById('stats');
     if (!host) return;
-    var rows = statRows(shown);
+    var rows = shown;
     var n = rows.length;
     var cOk = rows.filter(function (r) { return r.repro === '能'; }).length;
     var cMid = rows.filter(function (r) { return r.repro === '存疑'; }).length;
     var cBad = rows.filter(function (r) { return r.repro === '不能'; }).length;
-    var samples = all().length - all().filter(function (r) { return !isSample(r); }).length;
 
     var html = '';
     html += '<div class="headline">';
@@ -139,11 +132,6 @@
     html += '<div class="legend"><span class="l2">已给出（2）</span><span class="l1">给得不全（1）</span>'
       + '<span class="l0">未给出（0）</span><span class="lna">不适用（NA）</span></div>';
 
-    if (samples > 0) {
-      var realCount = all().length - samples;
-      html += '<div class="legend">另有 ' + samples + ' 条示例数据，仅用于演示，不计入统计'
-        + (realCount === 0 ? '（当前尚无正式数据，上方统计取自示例）' : '') + '。</div>';
-    }
     host.innerHTML = html;
   }
 
@@ -201,11 +189,10 @@
       var doiLink = (r.doi && r.doi !== '无')
         ? '<a href="https://doi.org/' + esc(r.doi) + '" target="_blank" rel="noopener">' + esc(r.doi) + '</a>'
         : '<span class="muted">无</span>';
-      var sampleBadge = isSample(r) ? '<span class="badge-sample">示例</span>' : '';
       var tagCls = r.repro === '能' ? 'ok' : (r.repro === '存疑' ? 'mid' : 'bad');
 
       h += '<tr class="row' + (open ? ' open' : '') + '" data-id="' + esc(r.id) + '">';
-      h += '<td class="title">' + esc(r.title) + sampleBadge + '</td>';
+      h += '<td class="title">' + esc(r.title) + '</td>';
       h += '<td class="muted nowrap">' + esc(r.journal) + '</td>';
       h += '<td class="nowrap">' + esc(r.year) + '</td>';
       h += '<td class="nowrap muted">' + esc(r.paper_type) + '</td>';
@@ -316,9 +303,7 @@
     }
     var foot = document.getElementById('foot-stat');
     if (foot) {
-      var n = all().length;
-      var real = all().filter(function (r) { return !isSample(r); }).length;
-      foot.textContent = '当前收录 ' + n + ' 条' + (real === 0 && n > 0 ? '（均为示例）' : '') + '。';
+      foot.textContent = '当前收录 ' + all().length + ' 条。';
     }
     buildSelects();
     bindControls();
