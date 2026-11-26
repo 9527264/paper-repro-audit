@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>判定标准与提交规则 · 控制类论文可复现性标注库</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>判定标准与提交规则</h1>
+    <p class="sub">这份页面的唯一作用：让两个人标同一篇论文，得出同一个分。标之前请先读完。</p>
+    <nav class="links">
+      <a href="index.html">← 回到列表</a>
+      <a id="nav-submit" href="https://github.com/" target="_blank" rel="noopener">提交一篇标注 →</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+<article class="doc">
+
+  <h2>三条纪律</h2>
+  <ol>
+    <li><strong>只记录「有没有给」，不评价好坏、不评价作者水平。</strong> 全站不出现「差」「不合格」「灌水」这类词。</li>
+    <li><strong>只看这一篇。</strong> 不去查作者的其他论文，不假设「他没写但应该懂」。</li>
+    <li><strong>目标是判断「能不能照着做」，不是读懂论文。</strong> 每篇约 10 分钟，超时说明你在读内容，而不是在标注。</li>
+  </ol>
+  <blockquote>判定依据只有一个：论文里白纸黑字写了没有。写了但放在附录里，算写了；只在图里隐约可见、读不出数值，算「部分给出」。</blockquote>
+
+  <h2>四档评分</h2>
+  <table>
+    <tr><th>分值</th><th>含义</th></tr>
+    <tr><td><code>2</code></td><td>明确给出，照它就能做</td></tr>
+    <tr><td><code>1</code></td><td>给了但不完整，需要猜</td></tr>
+    <tr><td><code>0</code></td><td>未给出</td></tr>
+    <tr><td><code>NA</code></td><td>该类论文不该有此项（例如纯算法文章没有仿真设置）</td></tr>
+  </table>
+
+  <h2>六项怎么判</h2>
+
+  <h3>1. 对象模型 <code>m1_model</code></h3>
+  <p><strong>问句</strong>：有没有被控对象的数学描述，<em>且参数是具体数值</em>？</p>
+  <table>
+    <tr><th>分</th><th>特征</th></tr>
+    <tr><td>2</td><td>给出传递函数/状态方程/差分方程，符号有数值且带单位；或给出参数表（K、T、τ 等逐项有值）</td></tr>
+    <tr><td>1</td><td>有模型形式，但参数写「由实验辨识得到」而未给值；或只给部分参数；或只在 Simulink 截图里出现数值</td></tr>
+    <tr><td>0</td><td>只有「液压系统」「伺服机构」之类文字描述；或写「模型见文献[12]」</td></tr>
+  </table>
+  <blockquote>正例（判 2）：阀控缸的传递函数为 G(s)=K/(s(T₁s+1)(T₂s+1))，其中 K=0.032 m³/(s·A)，T₁=0.12 s，T₂=0.008 s。<br>
+  反例（判 1）：压力机液压系统可用二阶模型描述，其参数通过实验辨识获得。</blockquote>
+  <p><strong>易错</strong>：有框图 ≠ 有模型（框图属于控制器结构）；参数只给范围且未指定仿真取值 → 1。</p>
+
+  <h3>2. 建模过程 <code>m2_deriv</code></h3>
+  <p><strong>问句</strong>：有没有从机理到模型的推导，能看到中间步骤？</p>
+  <table>
+    <tr><th>分</th><th>特征</th></tr>
+    <tr><td>2</td><td>至少两步推导，中间式可见（如 流量方程 → 力平衡 → 拉氏变换）</td></tr>
+    <tr><td>1</td><td>只给起止两步、中间跳过；或「由机理可得」配一个引用</td></tr>
+    <tr><td>0</td><td>直接抛出传递函数，无任何来源</td></tr>
+  </table>
+  <p><strong>易错</strong>：不要因为「这篇重点是控制、建模可以省略」就提分，按事实判。推导在附录里算 2。</p>
+
+  <h3>3. 控制器结构 <code>m3_struct</code></h3>
+  <p><strong>问句</strong>：有没有控制律的数学表达式或控制框图？</p>
+  <table>
+    <tr><th>分</th><th>特征</th></tr>
+    <tr><td>2</td><td>写出 PID 三项表达式、自适应律，或优化问题的完整形式（目标函数 + 约束 + 待优化变量）</td></tr>
+    <tr><td>1</td><td>只有文字「采用 PID 控制」；或有框图但无一行公式</td></tr>
+    <tr><td>0</td><td>完全没交代控制结构</td></tr>
+  </table>
+  <p><strong>优化类特别注意</strong>：只写「用 PSO 优化 PID 参数」但没给目标函数（ITAE？ISE？带超调惩罚？），记 1——目标函数不明确，结果无法复现。</p>
+
+  <h3>4. 控制器参数 <code>m4_params</code></h3>
+  <p><strong>问句</strong>：有没有能直接抄进代码的参数？</p>
+  <table>
+    <tr><th>分</th><th>特征</th></tr>
+    <tr><td>2</td><td>Kp/Ti/Td 有数值；优化类：算法超参数（种群数、迭代数、权重、搜索区间）＋最终最优参数都给全</td></tr>
+    <tr><td>1</td><td>只给一部分：给了 Kp 没给 Ti/Td；或只给超参数没给最终参数</td></tr>
+    <tr><td>0</td><td>完全没有</td></tr>
+  </table>
+  <p><strong>高频陷阱</strong>：论文说「整定后的参数见表 3」，翻到表 3 只有超调量和调节时间，没有 Kp/Ti/Td —— 判 <strong>0</strong>，不是 1，因为参数根本没出现。</p>
+
+  <h3>5. 仿真设置 <code>m5_simset</code></h3>
+  <p>数四项里给了几项：① 采样步长或求解器；② 仿真时长；③ 初值/初始状态；④ 输入幅值或扰动位置。</p>
+  <table>
+    <tr><th>分</th><th>特征</th></tr>
+    <tr><td>2</td><td>≥3 项</td></tr>
+    <tr><td>1</td><td>1~2 项（只写「在 MATLAB/Simulink 中仿真」不算任何一项）</td></tr>
+    <tr><td>0</td><td>0 项</td></tr>
+  </table>
+
+  <h3>6. 响应曲线 <code>m6_plot</code></h3>
+  <p><strong>问句</strong>：有没有一张图，能让你读出超调量和调节时间？</p>
+  <table>
+    <tr><th>分</th><th>特征</th></tr>
+    <tr><td>2</td><td>时域响应曲线（阶跃/跟踪/扰动），坐标轴有标签和单位，至少能读出超调、调节时间、稳态误差中的两项</td></tr>
+    <tr><td>1</td><td>有曲线但读不出：无坐标数值、截图模糊、只给局部放大、或只有柱状对比图</td></tr>
+    <tr><td>0</td><td>没有任何响应图，只有数字表格</td></tr>
+  </table>
+  <p><strong>易错</strong>：Bode 图/根轨迹不能替代阶跃响应，只有频域图 → 1。</p>
+
+  <h2>总评 <code>repro</code> 怎么给</h2>
+  <ol>
+    <li><strong>硬门槛</strong>：对象模型或控制器参数为 0 → 直接判「不能」。</li>
+    <li>否则数缺失项（六项里记 0 或 1 的个数，NA 不计）：
+      <ul>
+        <li>缺 0~1 项，且缺的是可合理推断的（如未写初值但零初始显然）→ <strong>能</strong></li>
+        <li>缺 2~3 项 → <strong>存疑</strong></li>
+        <li>缺 ≥4 项 → <strong>不能</strong></li>
+      </ul>
+    </li>
+    <li>在备注里写一句缺什么，例如：<code>缺：m5(初值)、m6(无响应图)</code>。</li>
+  </ol>
+
+  <h2>论文类型先判</h2>
+  <p><code>仿真</code> 只有软件结果；<code>实验</code> 有实验台或样机数据；<code>工程</code> 是现场应用。类型必须在标六项之前定，因为标准不同——纯仿真论文不该苛求实测数据。</p>
+
+  <h2>怎么提交</h2>
+  <ol>
+    <li>点右上角「提交一篇标注」，按表单填写（一个 Issue 只放一篇论文）。</li>
+    <li>表单里的字段与本站六项一一对应，请先按上面的判定标准自己判一遍。</li>
+    <li>维护者复核后录入，Issue 关闭即表示已发布；有分歧会在 Issue 里回复。</li>
+    <li>发现已有条目判错，同一入口提「纠错」，标题写 <code>[纠错] 编号</code>。</li>
+  </ol>
+
+  <h2>数据与版权</h2>
+  <p>本站只保存书目信息（标题、期刊、年份、DOI）与标注结果，<strong>不存储、不转载论文全文或图片</strong>。想读原文请按 DOI 自行到知网等数据库获取。标注仅记录「论文中是否给出某项」这一客观事实，不构成对论文质量的评价。</p>
+
+  <h2>关于统计口径</h2>
+  <ul>
+    <li>未给全率的计算分母<strong>不含 NA</strong>，按论文类型分组看更有意义。</li>
+    <li>「未给出（0）」和「给得不全（1）」分开统计——这是两个不同的问题，合并会失真。</li>
+    <li>最有用的一个数字：六项里哪一项缺失最多，那就是复现卡点的排序。</li>
+  </ul>
+
+</article>
+</main>
+
+<script src="data/papers.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
