@@ -205,7 +205,7 @@
           + ' · 标注人：' + esc(r.annotator || '—')
           + ' · 标注日期：' + esc(r.date || '—')
           + ' · 编号：' + esc(r.id)
-          + ' · <a href="https://github.com/' + REPO + '/issues/new?template=' + encodeURIComponent('提交标注.yml')
+          + ' · <a href="https://github.com/' + REPO + '/issues/new?template=' + encodeURIComponent('submit-paper.yml')
           + '&amp;title=' + encodeURIComponent('[纠错] ' + r.id) + '" target="_blank" rel="noopener">提交纠错</a></div>';
         h += '</td></tr>';
       }
