@@ -19,10 +19,6 @@ rows = json.loads(text[start:end])
 FIELDS = ["m1_model", "m2_deriv", "m3_struct", "m4_params", "m5_simset", "m6_plot"]
 
 
-def is_sample(r):
-    return r["title"].startswith("示例")
-
-
 def pick(type_=None, q=None, missing=None, repro=None, year=None):
     out = []
     for r in rows:
@@ -43,8 +39,7 @@ def pick(type_=None, q=None, missing=None, repro=None, year=None):
     return out
 
 
-real = [r for r in rows if not is_sample(r)]
-stat_rows = real if real else rows
+stat_rows = rows
 
 field_counts = {}
 for f in FIELDS:
@@ -53,7 +48,6 @@ for f in FIELDS:
 
 expected = {
     "total": len(rows),
-    "samples": sum(1 for r in rows if is_sample(r)),
     "stat_n": len(stat_rows),
     "repro_counts": {k: sum(1 for r in stat_rows if r["repro"] == k) for k in ("能", "存疑", "不能")},
     "field_counts": field_counts,
