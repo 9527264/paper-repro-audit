@@ -1,0 +1,64 @@
+name: 收录标注
+
+# 触发：
+#   1）仓库主人自己提交的标注 —— 打开即收录
+#   2）别人提交的 —— 维护者打上「已收录」标签后收录
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  ingest:
+    if: >
+      (github.event.action == 'opened' && github.event.issue.user.login == github.repository_owner)
+      || (github.event.action == 'labeled' && github.event.label.name == '已收录')
+    runs-on: ubuntu-latest
+    steps:
+      - name: 取出仓库
+        uses: actions/checkout@v4
+
+      - name: 准备 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 解析 Issue 并写入数据
+        id: parse
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+        run: |
+          set +e
+          python scripts/issue2row.py
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: 提交并推送（Pages 会自动重建）
+        if: steps.parse.outputs.code == '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/papers.csv data/papers.js
+          if git diff --cached --quiet; then
+            echo "数据没有变化，跳过提交"
+          else
+            git commit -m "收录标注 (#${{ github.event.issue.number }})"
+            git push
+          fi
+
+      - name: 在 Issue 里回复结果
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CODE: ${{ steps.parse.outputs.code }}
+        run: |
+          case "$CODE" in
+            0) body="已收录，页面约 1 分钟后更新：https://9527264.github.io/paper-repro-audit/" ;;
+            2) body="这篇之前已经收录过，没有重复添加。" ;;
+            *) body="解析失败：请检查年份是否 4 位数字、六项评分是否都在 2/1/0/NA 之内。改完重新提交即可。" ;;
+          esac
+          gh issue comment "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --body "$body"
