@@ -120,5 +120,25 @@ window.PAPERS = [
   "notes": "缺：m4(未给微分时间Td)",
   "annotator": "YZH",
   "date": "2026-11-26"
+ },
+ {
+  "id": "S007",
+  "title": "机械液压混合伺服压力机的方案设计与研究",
+  "journal": "硕士论文",
+  "year": "2019",
+  "doi": "无",
+  "paper_type": "仿真",
+  "plant": "液压伺服",
+  "ctrl_type": "PID",
+  "m1_model": "2",
+  "m2_deriv": "2",
+  "m3_struct": "2",
+  "m4_params": "2",
+  "m5_simset": "1",
+  "m6_plot": "2",
+  "repro": "不能",
+  "notes": "看着数据给的全，其实结果做不出来，严重怀疑注水",
+  "annotator": "9527264",
+  "date": "2026-11-27"
  }
 ];
