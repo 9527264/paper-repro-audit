@@ -129,7 +129,9 @@ def norm_title(s):
 def load_csv():
     text = CSV_PATH.read_text(encoding="utf-8-sig")
     rows = list(csv.reader(io.StringIO(text)))
-    head, body = rows[0], rows[1:]
+    head = rows[0]
+    # 丢掉空行（历史文件里可能夹着空行，留着会被原样写回去）
+    body = [r for r in rows[1:] if any(c.strip() for c in r)]
     if head != COLS:
         die("papers.csv 的表头和脚本里的 COLS 对不上")
     return body
